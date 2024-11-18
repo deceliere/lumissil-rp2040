@@ -7,24 +7,9 @@
 #include <main.h>
 #include "video2led.h"
 #include <SD.h>
-#define STACK_SIZE 1024
-
-uint8_t stack_dummy[STACK_SIZE];
-
-void check_stack_usage(void) {
-    int unused = 0;
-    for (int i = 0; i < STACK_SIZE; i++) {
-        if (stack_dummy[i] == 0xAA) {
-            unused++;
-        }
-    }
-    DPRINT("Unused stack space:");
-    DPRINT(unused);
-    DPRINTLN("bytes unused");
-}
-
 
 #define WAITMILLIS 500
+#define SD_CARD_CS 7
 
 void IS31FL3737B_Test_mode1(void);
 void IS31FL3737B_init(void);
@@ -38,61 +23,30 @@ void setup()
   while (!Serial)
     ;
 #endif
-  // Wire.setSCL(SCL);
-  // Wire.setSDA(SDA);
+  Wire.setSDA(26);
+  Wire.setSCL(27);
   Wire.begin();
-  Wire.setClock(400000UL); // I2C 800kHz
+  // Wire.setClock(800000UL); // I2C 800kHz
   // randomSeed(analogRead(1));
-  // pinMode(13, OUTPUT);
+  pinMode(13, OUTPUT);
   IS31FL3737B_init();
-  // analogWrite(13, LED_LEVEL);
+  analogWrite(13, LED_LEVEL);
   DPRINT("Serial ok\n");
   initExp(); // initialisation de la fonction exponentielle
   // Initialisation de la carte SD
-  if (!SD.begin(SDCARD))
+  if (!SD.begin(SD_CARD_CS))
   {
     Serial.println("Erreur lors de l'initialisation de la carte SD");
     while (1)
       ;
   }
-  Serial.println("Initialisation réussie.");
-  // File myFile = SD.open("exemple.txt");
-  // if (myFile)
-  // {
-  //   Serial.println("Contenu de exemple.txt :");
-  //   while (myFile.available())
-  //   {
-  //     Serial.write(myFile.read());
-  //   }
-  //   myFile.close();
-  //   Serial.println();
-  // }
-  // else
-  // {
-  //   Serial.println("Erreur lors de l'ouverture du fichier exemple.txt");
-  // }
-
-  Serial.println("Recherche des périphériques I2C...");
-  for (byte address = 1; address < 127; ++address)
-  {
-    Wire.beginTransmission(address);
-    if (Wire.endTransmission() == 0)
-    {
-      Serial.print("Périphérique I2C trouvé à l'adresse 0x");
-      Serial.println(address, HEX);
-    }
-  }
 
   allLedPWMfull();
-  delay(500);
-  resetALlLedPWM();
-  memset(stack_dummy, 0xAA, STACK_SIZE);
-  check_stack_usage();
+  delay(200);
 }
 
 void loop()
 {
-  // testElapsedMillis();
   // resetALlLedPWM();
   // IS31FL3737B_Test_mode1(); // breath mode
   // delay(1000);
@@ -104,14 +58,12 @@ void loop()
 
   // studipTest();
   // noiseTest();
-
   // readAndProcessFile("test_processing_255.txt");
   // readAndProcessFileBinary("image_data_binary.bin");
   // readAndProcessFileBinaryFade("image_data_binary.bin");
-  // readAndProcessFileBinaryFadeRandom("image_data_binary.bin");
+  readAndProcessFileBinaryFadeRandom("image_data_binary.bin");
   // readAndProcessFileBinary("coucou_led_30_17.bin");
   // xfadeTest();
-  readAndProcessFileBinaryBasic("image_data_binary.bin");
 
   // breathAllLed();
   // twelveBaseTest();
@@ -228,7 +180,6 @@ void allLedPWMfull(void)
   IS_IIC_WriteByte(Addr_GND_GND, 0xFD, 0x01); // Turn to page 1: PWM registers
   while (led--)
     IS_IIC_WriteByte(Addr_GND_GND, led, 255); // update all PWM
-  PRINTLN("all led full");
 }
 
 void resetALlLedPWM(void)
@@ -268,24 +219,10 @@ uint8_t IS_I2C_BufferWrite(uint8_t *pBuffer, int length, int WriteAddress, int D
   for (int i = 0; i < seg; i++)
   {
     Wire.beginTransmission(DeviceAddress / 2); // transmit to device address
-    DPRINT("inital write return=");
-    DPRINTLN(Wire.write(WriteAddress + (i * 32)));       // sends register address
+    Wire.write(WriteAddress + (i * 32));       // sends register address
     for (int i = 32; i > 0; i--)
-    {
       Wire.write(*pBuffer++); // sends register data
-      DPRINT("BufferWrite ");
-      DPRINT("i=");
-      DPRINT(i);
-      DPRINT(" pBuffer=");
-      DPRINTLN(*pBuffer);
-    }
-    check_stack_usage();
-    #ifdef SERIAL_DEBUG
-    DPRINT("Wire.endTransmission returns:");
-    DPRINTLN(Wire.endTransmission()); // stop transmitting
-    #else
-    Wire.endTransmission(); // stop transmitting
-    #endif
+    Wire.endTransmission();   // stop transmitting
   }
   return 1;
 }
@@ -532,27 +469,11 @@ void studipTest(void)
   uint8_t buffer[192];
   clearBuffer(buffer, 192);
 
-  dot.col = 1;
-  dot.row = 4;
+  dot.col = 0;
+  dot.row = 0;
   dot.pwm = 255;
   writeToBuffer(buffer, dot);
   IS_I2C_BufferWrite(buffer, 192, 0, Addr_GND_GND);
   while (1)
     ;
 }
-
-// void testElapsedMillis()
-// {
-//   elapsedMillis test1 = 0;
-//   uint16_t i = 0;
-//   DPRINTLN(test1);
-//   while (1)
-//   {
-//     if (test1 > 1000)
-//     {
-//       i++;
-//       DPRINTLN(i);
-//       test1 = 0;
-//     }
-//   }
-// }

@@ -296,3 +296,8 @@ uint8_t I2C_ReadBuffer(uint8_t* pBuffer,   int length,     int ReadAddress,  int
     return TRUE1;
 }
 
+void coucou(int i)
+{
+  if (i)
+   return;
+}

@@ -26,8 +26,8 @@
 #define FALSE1 0
 #define FALSE2 2
 
-// #define SDA 20
-// #define SCL 21
+#define SDA 20
+#define SCL 21
 
 #define SCL_H         digitalWrite(SCL, HIGH)
 #define SCL_L         digitalWrite(SCL, LOW)  
@@ -75,6 +75,7 @@ uint8_t I2C_ReadBuffer(uint8_t* pBuffer, int length,int ReadAddress,int DeviceAd
 // uint8_t I2C_BufferWrite(uint8_t* pBuffer,int length,int WriteAddress,int DeviceAddress);
 uint8_t I2C_Test(uint8_t DeviceAddress);
 void All_LED_OFF(void);
+void coucou(int i);
 // void PIN_GPIO_Config_MISO(GPIOMode_TypeDef num1);
 #endif /* __2124_I2C_H */ 
 

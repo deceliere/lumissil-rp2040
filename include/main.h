@@ -11,8 +11,6 @@
 #define RANDOM_PAUSE 20000
 #define RANDOM_MAX_PWM 100
 #define RANDOM_PWM_MIN 1
-#define SDCARD 7 // SDcard CS pin on RP2040
-#define ARDUINO_ARCH_AVR
 
 #define LED_LEVEL 10
 
@@ -30,16 +28,16 @@
 
 typedef struct matrixDot
 {
-    uint8_t row; // 8 bits
-    uint8_t col; // 8 bits
-    uint8_t pwm; // 8 bits
-    uint8_t pwmTmp; // 8 bits
-    uint8_t pwmNext; // 8 bits
-    uint8_t pwmNextTmp; // 8 bits
-    uint8_t pwmFade; // 8 bits
-    uint16_t currentRandomTimer; // 16bits
-    uint16_t nextRandomTimer; // 16bits
-    elapsedMillis pixelTimer; // 32bits
+    uint8_t row;
+    uint8_t col;
+    uint8_t pwm;
+    uint8_t pwmTmp;
+    uint8_t pwmNext;
+    uint8_t pwmNextTmp;
+    uint8_t pwmFade;
+    uint16_t currentRandomTimer;
+    uint16_t nextRandomTimer;
+    elapsedMillis pixelTimer;
     // int8_t postRow;
     // int8_t postPwm;
 
@@ -73,7 +71,6 @@ void writeToBuffer(uint8_t *buffer, matrixDot dot);
 void writeFadeToBuffer(uint8_t *buffer, matrixDot dot);
 void drop(void);
 void bufferTest(void);
-void printBuffer(uint8_t *buffer);
 void initDrop(dropTimer *drop);
 void printDot(matrixDot dot);
 uint16_t randomDrop(void);
@@ -87,6 +84,5 @@ void xfadeDotInit(matrixDot *dot);
 // tests
 void studipTest(void);
 void noiseTest(void);
-void check_stack_usage(void);
 
 #endif

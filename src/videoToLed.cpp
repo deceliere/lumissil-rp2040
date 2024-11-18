@@ -7,7 +7,7 @@
 #include "ExponentMap.h"
 
 const int bufferSize = W_SOURCE * H_SOURCE; // pixel q
-// String buffer;
+String buffer;
 matrixDot dot[192];
 int values[bufferSize];
 u_int16_t valueMin = 0;
@@ -34,60 +34,15 @@ void printExpoScale(void)
   }
 }
 
-void readAndProcessFileBinaryBasic(const char *filename)
-{
-  byte binSourceCurrent[W_SOURCE * H_SOURCE]; // Buffer pour stocker une ligne de pixels
-  elapsedMillis frameDelay = 0;
-  File file = SD.open(filename);
-  frameCount = 0;
-// #ifdef SERIAL_DEBUG
-//   printExpoScale();
-// #endif
-  if (file)
-  {
-    // Boucle de lecture des lignes du fichier
-    while (file.available())
-    {
-      if (frameDelay > FRAME_DELAY)
-      {
-        file.read(binSourceCurrent, W_SOURCE * H_SOURCE);
-        displayFrameBinaryBasic(binSourceCurrent);
-        frameDelay = 0;
-      }
-    }
-    file.close();
-    DPRINTLN("file closed");
-  }
-  else
-  {
-    Serial.println("Erreur lors de l'ouverture du fichier");
-  }
-  frameCount++;
-  DPRINT("min value: ");
-  DPRINTLN(valueMin);
-  DPRINT("max value: ");
-  DPRINTLN(valueMax);
-  DPRINT("frametimer (microS) min: ");
-  DPRINTLN(frameTimerMin);
-  DPRINT("frametimer (microS) max: ");
-  DPRINTLN(frameTimerMax);
-  DPRINT("total microS variation span: ");
-  DPRINTLN(frameTimerMax - frameTimerMin);
-  DPRINT("total frame count: ");
-  DPRINTLN(frameCount);
-  // DPRINT("loop duration (S): ");
-  // DPRINTLN(loopDur / 1000);
-}
-
 void readAndProcessFileBinary(const char *filename)
 {
   byte binSourceCurrent[W_SOURCE * H_SOURCE]; // Buffer pour stocker une ligne de pixels
   elapsedMillis frameDelay = 0;
   File file = SD.open(filename);
   frameCount = 0;
-// #ifdef SERIAL_DEBUG
-//   printExpoScale();
-// #endif
+#ifdef SERIAL_DEBUG
+  printExpoScale();
+#endif
   if (file)
   {
     // Boucle de lecture des lignes du fichier
@@ -135,8 +90,8 @@ void initDotRandom(void)
 
 void dotRandomize(int i)
 {
-  dot[i].currentRandomTimer = dot[i].nextRandomTimer;
-  dot[i].nextRandomTimer = random(FRAME_DELAY);
+    dot[i].currentRandomTimer = dot[i].nextRandomTimer;
+    dot[i].nextRandomTimer = random(FRAME_DELAY);
 }
 
 #ifdef SERIAL_DEBUG
@@ -151,46 +106,23 @@ void randomDotTimer(int currentFrameDelay, int i)
       dot[i].pwmFade = (((double)(dot[i].pwmNextTmp - dot[i].pwmTmp) / (dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer)) * dot[i].pixelTimer) + dot[i].pwmTmp;
     else
       dot[i].pwmFade = dot[i].pwm;
-#ifdef SERIAL_DEBUG
+    #ifdef SERIAL_DEBUG
     if (i == SAMPLE)
     {
-      DPRINT("dot[");
-      DPRINT(SAMPLE);
-      DPRINT("].pwmFade=");
-      DPRINTLN(dot[SAMPLE].pwmFade);
-      DPRINT("dot[");
-      DPRINT(SAMPLE);
-      DPRINT("].pwm=");
-      DPRINTLN(dot[SAMPLE].pwm);
-      DPRINT("dot[");
-      DPRINT(SAMPLE);
-      DPRINT("].pwmNext=");
-      DPRINTLN(dot[SAMPLE].pwmNext);
-      DPRINT("dot[");
-      DPRINT(SAMPLE);
-      DPRINT("].currentRandom=");
-      DPRINTLN(dot[SAMPLE].currentRandomTimer);
-      DPRINT("dot[");
-      DPRINT(SAMPLE);
-      DPRINT("].nextRandom=");
-      DPRINTLN(dot[SAMPLE].nextRandomTimer);
-      DPRINTLN();
-      DPRINT("dot[");
-      DPRINT(SAMPLE);
-      DPRINT("].pixelTimer=");
-      DPRINTLN(dot[SAMPLE].pixelTimer);
-      DPRINT("max time=");
-      DPRINTLN(dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer);
-      DPRINT("time factor=");
-      DPRINTLN(((dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer) * dot[i].pixelTimer));
-      DPRINT("PWM / time factor=");
-      DPRINTLN((double)((dot[i].pwmNext - dot[i].pwm) / (dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer)) * dot[i].pixelTimer);
-      DPRINT("portion=");
-      DPRINTLN(((double)(dot[i].pwmNext - dot[i].pwm) / (dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer)) * dot[i].pixelTimer);
-      DPRINTLN();
+      DPRINT("dot[");DPRINT(SAMPLE);DPRINT("].pwmFade=");DPRINTLN(dot[SAMPLE].pwmFade);
+      DPRINT("dot[");DPRINT(SAMPLE);DPRINT("].pwm=");DPRINTLN(dot[SAMPLE].pwm);
+      DPRINT("dot[");DPRINT(SAMPLE);DPRINT("].pwmNext=");DPRINTLN(dot[SAMPLE].pwmNext);
+      DPRINT("dot[");DPRINT(SAMPLE);DPRINT("].currentRandom=");DPRINTLN(dot[SAMPLE].currentRandomTimer);
+      DPRINT("dot[");DPRINT(SAMPLE);DPRINT("].nextRandom=");DPRINTLN(dot[SAMPLE].nextRandomTimer);DPRINTLN();
+      DPRINT("dot[");DPRINT(SAMPLE);DPRINT("].pixelTimer=");DPRINTLN(dot[SAMPLE].pixelTimer);
+      DPRINT("max time=");DPRINTLN(dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer);
+      DPRINT("time factor=");DPRINTLN(((dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer) * dot[i].pixelTimer));
+      DPRINT("PWM / time factor=");DPRINTLN((double)((dot[i].pwmNext - dot[i].pwm) / (dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer)) * dot[i].pixelTimer);
+      DPRINT("portion=");DPRINTLN(((double)(dot[i].pwmNext - dot[i].pwm) / (dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer)) * dot[i].pixelTimer);DPRINTLN();
       // DPRINT("portion test=");DPRINTLN((double) 2/1000 * 100);DPRINTLN();
+
     }
-#endif
+    #endif
   }
   else
   {
@@ -199,20 +131,17 @@ void randomDotTimer(int currentFrameDelay, int i)
     dot[i].pwmNextTmp = dot[i].pwmNext;
     dotRandomize(i);
     dot[i].pixelTimer = 0;
-#ifdef SERIAL_DEBUG
+    #ifdef SERIAL_DEBUG
     if (i == SAMPLE)
     {
-      DPRINT("DOT[");
-      DPRINT(i);
-      DPRINTLN("] REDEFINED");
-      DPRINTLN();
-      DPRINTLN();
+      DPRINT("DOT[");DPRINT(i);DPRINTLN("] REDEFINED");DPRINTLN();DPRINTLN();
       DPRINTLN("//////////////////////////////////////////////////////////////////////////////////////////");
       DPRINTLN("//////////////////////////////////////////////////////////////////////////////////////////");
     }
-#endif
+    #endif
   }
 }
+
 
 void fade(int currentFrameDelay)
 {
@@ -328,7 +257,7 @@ void readAndProcessFileBinaryFadeRandom(const char *filename)
   File file = SD.open(filename);
   frameCount = 0;
   initDotRandom();
-#ifdef DEBUG_RD //  debug random ft
+#ifdef DEBUG //  debug random ft
   for (int i = 0; i < 192; i++)
   {
     DPRINT("dot>");
@@ -341,45 +270,32 @@ void readAndProcessFileBinaryFadeRandom(const char *filename)
 #endif
   if (file)
   {
-    DPRINTLN("file ok");
     // Boucle de lecture des lignes du fichier
     while (file.available())
     {
-      DPRINTLN("file available");
-      DPRINT("framecount:");
-      DPRINTLN(frameCount);
       if (!frameCount)
       {
         file.read(binSourceCurrent, W_SOURCE * H_SOURCE);
         file.read(binSourceNext, W_SOURCE * H_SOURCE);
-        for (int i = 0; i < W_SOURCE * H_SOURCE; i++)
-        {
-          DPRINT(binSourceCurrent[i]);
-          DPRINT(", ");
-        }
-        DPRINTLN();
         displayFrameBinary(binSourceCurrent, binSourceNext);
         currentFrameDelay = 0;
         frameCount++;
       }
-      DPRINT("currentFrameDelay:");
-      DPRINTLN(currentFrameDelay);
       if (currentFrameDelay > FRAME_DELAY)
       {
         memcpy(binSourceCurrent, binSourceNext, W_SOURCE * H_SOURCE * sizeof(uint8_t));
         file.read(binSourceNext, W_SOURCE * H_SOURCE);
         displayFrameBinaryRandom(binSourceCurrent, binSourceNext);
-        DPRINT("frame=");
-        DPRINT(frameCount);
-        DPRINT(" millis=");
-        DPRINTLN(currentFrameDelay);
+        // DPRINT("frame=");
+        // DPRINT(frameCount);
+        // DPRINT(" millis=");
+        // DPRINTLN(currentFrameDelay);
         currentFrameDelay = 0;
         frameCount++;
       }
       else if (currentFrameDelay < FRAME_DELAY)
       {
         fadeRandom(currentFrameDelay);
-        DPRINTLN("fadeRamdom ok");
       }
     }
     file.close();
@@ -408,7 +324,7 @@ uint8_t gammaPixel(uint8_t maxValue, uint8_t initalValue, double gamma)
   return ((uint8_t)(maxValue * pow((float)initalValue / maxValue, gamma)));
 }
 
-void displayFrameBinaryBasic(byte binArray[W_SOURCE * H_SOURCE])
+void displayFrameBinary(byte (&binArray)[W_SOURCE * H_SOURCE], byte (&binArrayNext)[W_SOURCE * H_SOURCE])
 {
   int i = 0;
   uint8_t buffer[192];
@@ -416,56 +332,8 @@ void displayFrameBinaryBasic(byte binArray[W_SOURCE * H_SOURCE])
 
   for (int y = 0; y < 12; y++)
   {
-    DPRINT(">>y");
-    DPRINTLN(y);
     for (int x = 0; x < 12; x++)
     {
-      DPRINT("x");
-      DPRINTLN(x);
-      binaryToDotBasic(x, y, binArray, i);
-      // if (dot[i].pwm < valueMin)
-      //   valueMin = dot[i].pwm;
-      // if (dot[i].pwm > valueMax)
-      //   valueMax = dot[i].pwm;
-      writeToBuffer(buffer, dot[i]);
-      i++;
-    }
-  }
-
-  printBuffer(buffer);
-  // for(int i = 0; i < 192; i++)
-  // {
-  //   DPRINT("buffer[");
-  //   DPRINT(i);
-  //   DPRINT("]=");
-  //   DPRINT(buffer[i]);
-  //   DPRINT(", ");
-  // }
-  IS_I2C_BufferWrite(buffer, 192, 0, Addr_GND_GND);
-  DPRINTLN("displayFrameBin");
-}
-
-
-void displayFrameBinary(byte binArray[W_SOURCE * H_SOURCE], byte binArrayNext[W_SOURCE * H_SOURCE])
-{
-  int i = 0;
-  uint8_t buffer[192];
-  clearBuffer(buffer, 192);
-
-  for (int i = 0; i < W_SOURCE * H_SOURCE; i++)
-  {
-    DPRINT(binArray[i]);
-    DPRINT(", ");
-  }
-  DPRINTLN();
-  for (int y = 0; y < 12; y++)
-  {
-    DPRINT(">>y");
-    DPRINTLN(y);
-    for (int x = 0; x < 12; x++)
-    {
-      DPRINT("x");
-      DPRINTLN(x);
       binaryToDot(x, y, binArray, binArrayNext, i);
       if (dot[i].pwm < valueMin)
         valueMin = dot[i].pwm;
@@ -475,20 +343,10 @@ void displayFrameBinary(byte binArray[W_SOURCE * H_SOURCE], byte binArrayNext[W_
       i++;
     }
   }
-  printBuffer(buffer);
-  // for(int i = 0; i < 192; i++)
-  // {
-  //   DPRINT("buffer[");
-  //   DPRINT(i);
-  //   DPRINT("]=");
-  //   DPRINT(buffer[i]);
-  //   DPRINT(", ");
-  // }
   IS_I2C_BufferWrite(buffer, 192, 0, Addr_GND_GND);
-  DPRINTLN("displayFrameBin");
 }
 
-void displayFrameBinaryRandom(byte binArray[W_SOURCE * H_SOURCE], byte binArrayNext[W_SOURCE * H_SOURCE])
+void displayFrameBinaryRandom(byte (&binArray)[W_SOURCE * H_SOURCE], byte (&binArrayNext)[W_SOURCE * H_SOURCE])
 {
   int i = 0;
   uint8_t buffer[192];
@@ -510,22 +368,7 @@ void displayFrameBinaryRandom(byte binArray[W_SOURCE * H_SOURCE], byte binArrayN
   // IS_I2C_BufferWrite(buffer, 192, 0, Addr_GND_GND);
 }
 
-void binaryToDotBasic(int x, int y, byte binArray[W_SOURCE * H_SOURCE], int i)
-{
-  dot[i].row = y;
-  dot[i].col = x;
-  dot[i].pwm = binArray[x + X_OFFSET + (y * W_SOURCE + (W_SOURCE * Y_OFFSET) + (12 - y))];
-  DPRINT("i=");
-  DPRINT(i);
-  DPRINT(" y=");
-  DPRINT(y);
-  DPRINT(" x=");
-  DPRINT(x);
-  DPRINT(" pwm=");
-  DPRINT(dot[i].pwm);
-  DPRINTLN(" ");
-}
-void binaryToDot(int x, int y, byte binArray[W_SOURCE * H_SOURCE], byte binArrayNext[W_SOURCE * H_SOURCE], int i)
+void binaryToDot(int x, int y, byte (&binArray)[W_SOURCE * H_SOURCE], byte (&binArrayNext)[W_SOURCE * H_SOURCE], int i)
 {
   // matrixDot dot;
   dot[i].row = y;
@@ -546,11 +389,11 @@ void binaryToDot(int x, int y, byte binArray[W_SOURCE * H_SOURCE], byte binArray
     dot.pwmNext = 1;
 #endif
 #else
-  dot[i].pwm = binArray[x + X_OFFSET + (y * W_SOURCE + (W_SOURCE * Y_OFFSET) + (12 - y))];
-  if (dot[i].pwm == 1)
-    dot[i].pwm = 0;
-  if (dot[i].pwmNext == 0)
-    dot[i].pwmNext = 1;
+  dot.pwm = lineBuffer[x + X_OFFSET + (y * W_SOURCE + (W_SOURCE * Y_OFFSET) + (12 - y))];
+  if (dot.pwm == 1)
+    dot.pwm = 0;
+  if (dot.pwmNext == 0)
+    dot.pwmNext = 1;
 #endif
   // return (dot);
 }

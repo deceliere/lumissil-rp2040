@@ -4,11 +4,11 @@
 #ifndef VIDEO2LED_H
 #define VIDEO2LED_H
 
+// #include <elapsedMillis.h>
 #include "ExponentMap.h"
-#define SERIAL_DEBUG
-#define WAIT_SERIAL
-#define VALUES_DEBUG
-#define DEBUG_RD
+// #define SERIAL_DEBUG
+// #define WAIT_SERIAL
+// #define VALUES_DEBUG
 // #define EXPO_PWM
 #define GAMMA_PWM
 // #define MIN_LED_1 // min led level = 1
@@ -22,11 +22,11 @@
 
 #endif
 
-// teensy pins (old, pour ecran )
-// #define DATA 5
-// #define WR 4
-// #define RD 3
-// #define CS 2 // D2 on firebeetle
+// teensy pins
+#define DATA 5
+#define WR 4
+#define RD 3
+#define CS 2 // D2 on firebeetle
 
 #define FRAME_DELAY 20 // typ 18
 // #define BRIGHTNESS 4 // max 15
@@ -59,13 +59,11 @@ void readAndProcessFile(const char *filename);
 void readAndProcessFileBinary(const char *filename);
 void readAndProcessFileBinaryFade(const char *filename);
 void readAndProcessFileBinaryFadeRandom(const char *filename);
-void readAndProcessFileBinaryBasic(const char *filename);
 void displayFrame();
-void displayFrameBinary(byte binArray[W_SOURCE * H_SOURCE], byte binArrayNext[W_SOURCE * H_SOURCE]);
-void displayFrameBinaryRandom(byte binArray[W_SOURCE * H_SOURCE], byte binArrayNext[W_SOURCE * H_SOURCE]);
+void displayFrameBinary(byte (&binArray)[W_SOURCE * H_SOURCE], byte (&binArrayNext)[W_SOURCE * H_SOURCE]);
+void displayFrameBinaryRandom(byte (&binArray)[W_SOURCE * H_SOURCE], byte (&binArrayNext)[W_SOURCE * H_SOURCE]);
 // void displayFrameBinary();
-void displayFrameBinaryBasic(byte binArray[W_SOURCE * H_SOURCE]);
-void binaryToDot(int x, int y, byte binArray[W_SOURCE * H_SOURCE], byte binArrayNext[W_SOURCE * H_SOURCE], int i);
+void binaryToDot(int x, int y, byte (&binArray)[W_SOURCE * H_SOURCE], byte (&binArrayNext)[W_SOURCE * H_SOURCE], int i);
 void initDotRandom(void);
 void dotRandomize(int i);
 void randomDotTimer(int currentFrameDelay);
@@ -79,11 +77,5 @@ void initExp(void);
 // test correct led curve
 uint8_t gammaPixel(uint8_t maxValue, uint8_t initalValue, double gamma);
 void printExpoScale(void);
-
-// test elapsedMillis
-// void testElapsedMillis();
-
-// tests
-void binaryToDotBasic(int x, int y, byte binArray[W_SOURCE * H_SOURCE], int i);
 
 #endif
