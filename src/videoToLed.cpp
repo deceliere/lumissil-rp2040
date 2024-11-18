@@ -19,6 +19,8 @@ byte steps_count;
 
 ExponentMap<int> expoPWM(255, pwm_max_value);
 
+elapsedMillis frameTimer = 0;
+
 void initExp(void)
 {
   steps_count = expoPWM.stepsCount();
@@ -53,6 +55,9 @@ void readAndProcessFileBinary(const char *filename)
         file.read(binSourceCurrent, W_SOURCE * H_SOURCE);
         displayFrameBinary(binSourceCurrent, binSourceCurrent);
         frameDelay = 0;
+        // Serial.print("frameTimer=");
+        // Serial.println(frameTimer);
+        // frameTimer = 0;
       }
     }
     file.close();
@@ -90,8 +95,8 @@ void initDotRandom(void)
 
 void dotRandomize(int i)
 {
-    dot[i].currentRandomTimer = dot[i].nextRandomTimer;
-    dot[i].nextRandomTimer = random(FRAME_DELAY);
+  dot[i].currentRandomTimer = dot[i].nextRandomTimer;
+  dot[i].nextRandomTimer = random(FRAME_DELAY);
 }
 
 #ifdef SERIAL_DEBUG
@@ -106,23 +111,46 @@ void randomDotTimer(int currentFrameDelay, int i)
       dot[i].pwmFade = (((double)(dot[i].pwmNextTmp - dot[i].pwmTmp) / (dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer)) * dot[i].pixelTimer) + dot[i].pwmTmp;
     else
       dot[i].pwmFade = dot[i].pwm;
-    #ifdef SERIAL_DEBUG
+#ifdef SERIAL_DEBUG
     if (i == SAMPLE)
     {
-      DPRINT("dot[");DPRINT(SAMPLE);DPRINT("].pwmFade=");DPRINTLN(dot[SAMPLE].pwmFade);
-      DPRINT("dot[");DPRINT(SAMPLE);DPRINT("].pwm=");DPRINTLN(dot[SAMPLE].pwm);
-      DPRINT("dot[");DPRINT(SAMPLE);DPRINT("].pwmNext=");DPRINTLN(dot[SAMPLE].pwmNext);
-      DPRINT("dot[");DPRINT(SAMPLE);DPRINT("].currentRandom=");DPRINTLN(dot[SAMPLE].currentRandomTimer);
-      DPRINT("dot[");DPRINT(SAMPLE);DPRINT("].nextRandom=");DPRINTLN(dot[SAMPLE].nextRandomTimer);DPRINTLN();
-      DPRINT("dot[");DPRINT(SAMPLE);DPRINT("].pixelTimer=");DPRINTLN(dot[SAMPLE].pixelTimer);
-      DPRINT("max time=");DPRINTLN(dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer);
-      DPRINT("time factor=");DPRINTLN(((dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer) * dot[i].pixelTimer));
-      DPRINT("PWM / time factor=");DPRINTLN((double)((dot[i].pwmNext - dot[i].pwm) / (dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer)) * dot[i].pixelTimer);
-      DPRINT("portion=");DPRINTLN(((double)(dot[i].pwmNext - dot[i].pwm) / (dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer)) * dot[i].pixelTimer);DPRINTLN();
+      DPRINT("dot[");
+      DPRINT(SAMPLE);
+      DPRINT("].pwmFade=");
+      DPRINTLN(dot[SAMPLE].pwmFade);
+      DPRINT("dot[");
+      DPRINT(SAMPLE);
+      DPRINT("].pwm=");
+      DPRINTLN(dot[SAMPLE].pwm);
+      DPRINT("dot[");
+      DPRINT(SAMPLE);
+      DPRINT("].pwmNext=");
+      DPRINTLN(dot[SAMPLE].pwmNext);
+      DPRINT("dot[");
+      DPRINT(SAMPLE);
+      DPRINT("].currentRandom=");
+      DPRINTLN(dot[SAMPLE].currentRandomTimer);
+      DPRINT("dot[");
+      DPRINT(SAMPLE);
+      DPRINT("].nextRandom=");
+      DPRINTLN(dot[SAMPLE].nextRandomTimer);
+      DPRINTLN();
+      DPRINT("dot[");
+      DPRINT(SAMPLE);
+      DPRINT("].pixelTimer=");
+      DPRINTLN(dot[SAMPLE].pixelTimer);
+      DPRINT("max time=");
+      DPRINTLN(dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer);
+      DPRINT("time factor=");
+      DPRINTLN(((dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer) * dot[i].pixelTimer));
+      DPRINT("PWM / time factor=");
+      DPRINTLN((double)((dot[i].pwmNext - dot[i].pwm) / (dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer)) * dot[i].pixelTimer);
+      DPRINT("portion=");
+      DPRINTLN(((double)(dot[i].pwmNext - dot[i].pwm) / (dot[i].nextRandomTimer + FRAME_DELAY - dot[i].currentRandomTimer)) * dot[i].pixelTimer);
+      DPRINTLN();
       // DPRINT("portion test=");DPRINTLN((double) 2/1000 * 100);DPRINTLN();
-
     }
-    #endif
+#endif
   }
   else
   {
@@ -131,17 +159,20 @@ void randomDotTimer(int currentFrameDelay, int i)
     dot[i].pwmNextTmp = dot[i].pwmNext;
     dotRandomize(i);
     dot[i].pixelTimer = 0;
-    #ifdef SERIAL_DEBUG
+#ifdef SERIAL_DEBUG
     if (i == SAMPLE)
     {
-      DPRINT("DOT[");DPRINT(i);DPRINTLN("] REDEFINED");DPRINTLN();DPRINTLN();
+      DPRINT("DOT[");
+      DPRINT(i);
+      DPRINTLN("] REDEFINED");
+      DPRINTLN();
+      DPRINTLN();
       DPRINTLN("//////////////////////////////////////////////////////////////////////////////////////////");
       DPRINTLN("//////////////////////////////////////////////////////////////////////////////////////////");
     }
-    #endif
+#endif
   }
 }
-
 
 void fade(int currentFrameDelay)
 {
@@ -249,6 +280,8 @@ void readAndProcessFileBinaryFade(const char *filename)
   DPRINTLN(frameCount);
 }
 
+elapsedMillis fadeTimer = 0;
+
 void readAndProcessFileBinaryFadeRandom(const char *filename)
 {
   byte binSourceCurrent[W_SOURCE * H_SOURCE]; // Buffer pour stocker une ligne de pixels
@@ -286,6 +319,11 @@ void readAndProcessFileBinaryFadeRandom(const char *filename)
         memcpy(binSourceCurrent, binSourceNext, W_SOURCE * H_SOURCE * sizeof(uint8_t));
         file.read(binSourceNext, W_SOURCE * H_SOURCE);
         displayFrameBinaryRandom(binSourceCurrent, binSourceNext);
+        Serial.print("frameTimer = ");
+        Serial.println(frameTimer);
+        Serial.print("currentFrameDelay = ");
+        Serial.println(currentFrameDelay);
+        frameTimer = 0;
         // DPRINT("frame=");
         // DPRINT(frameCount);
         // DPRINT(" millis=");
@@ -296,6 +334,9 @@ void readAndProcessFileBinaryFadeRandom(const char *filename)
       else if (currentFrameDelay < FRAME_DELAY)
       {
         fadeRandom(currentFrameDelay);
+        Serial.print("fadeTimer = ");
+        Serial.println(fadeTimer);
+        fadeTimer = 0;
       }
     }
     file.close();

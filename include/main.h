@@ -14,6 +14,11 @@
 
 #define LED_LEVEL 10
 
+#define WAITMILLIS 500
+#define SD_CARD_CS 7 // chip select SD card
+#define SDA_RD 26 // SDA non standard pour pouvoir fonctionner avec SPI (bug a l ouverture d un fichier sur carte SD - RD2040)
+#define SCL_RD 27 // SCK non standard
+
 // #ifdef DEBUG
 // #define DPRINT(x) Serial.print(x)
 // #define DPRINTLN(x) Serial.println(x)

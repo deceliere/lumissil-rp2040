@@ -7,7 +7,7 @@
 // #include <elapsedMillis.h>
 #include "ExponentMap.h"
 // #define SERIAL_DEBUG
-// #define WAIT_SERIAL
+#define WAIT_SERIAL
 // #define VALUES_DEBUG
 // #define EXPO_PWM
 #define GAMMA_PWM
@@ -28,7 +28,7 @@
 #define RD 3
 #define CS 2 // D2 on firebeetle
 
-#define FRAME_DELAY 20 // typ 18
+#define FRAME_DELAY 12 // typ 18
 // #define BRIGHTNESS 4 // max 15
 
 // #define TOTAL_SOURCE_PIXELS 5184

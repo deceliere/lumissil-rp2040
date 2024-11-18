@@ -8,12 +8,11 @@
 #include "video2led.h"
 #include <SD.h>
 
-#define WAITMILLIS 500
-#define SD_CARD_CS 7
-
-void IS31FL3737B_Test_mode1(void);
-void IS31FL3737B_init(void);
+// void IS31FL3737B_Test_mode1(void);
+// void IS31FL3737B_init(void);
 uint8_t ledMatrix[192];
+
+elapsedMillis loopTimer;
 
 void setup()
 {
@@ -23,8 +22,8 @@ void setup()
   while (!Serial)
     ;
 #endif
-  Wire.setSDA(26);
-  Wire.setSCL(27);
+  Wire.setSDA(SDA_RD);
+  Wire.setSCL(SCL_RD);
   Wire.begin();
   // Wire.setClock(800000UL); // I2C 800kHz
   // randomSeed(analogRead(1));
@@ -40,9 +39,11 @@ void setup()
     while (1)
       ;
   }
-
   allLedPWMfull();
   delay(200);
+  resetALlLedPWM();
+  delay(200);
+  loopTimer = 0;
 }
 
 void loop()
@@ -59,9 +60,12 @@ void loop()
   // studipTest();
   // noiseTest();
   // readAndProcessFile("test_processing_255.txt");
-  // readAndProcessFileBinary("image_data_binary.bin");
+  readAndProcessFileBinary("image_data_binary.bin");
   // readAndProcessFileBinaryFade("image_data_binary.bin");
-  readAndProcessFileBinaryFadeRandom("image_data_binary.bin");
+  // readAndProcessFileBinaryFadeRandom("image_data_binary.bin");
+  Serial.print("loopTime = ");
+  Serial.println((float)loopTimer/1000);
+  loopTimer = 0;
   // readAndProcessFileBinary("coucou_led_30_17.bin");
   // xfadeTest();
 
