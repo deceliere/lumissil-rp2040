@@ -1,4 +1,5 @@
-#include <SD.h>
+// #include <SD.h>
+#include <SdFat.h>
 #include "main.h"
 
 #ifndef VIDEO2LED_H
@@ -53,6 +54,8 @@ extern u_int16_t frameTimerMax;
 extern u_int16_t frameCount;
 //
 
+// SdFat SD;
+
 // file //
 void processLine(String line);
 void readAndProcessFile(const char *filename);
@@ -65,6 +68,7 @@ void displayFrameBinary(byte binArray[W_SOURCE * H_SOURCE], byte binArrayNext[W_
 void displayFrameBinaryRandom(byte binArray[W_SOURCE * H_SOURCE], byte binArrayNext[W_SOURCE * H_SOURCE]);
 // void displayFrameBinary();
 void displayFrameBinaryBasic(byte binArray[W_SOURCE * H_SOURCE]);
+void readAndProcessFileBinaryBasicOneFrame(const char *filename);
 void binaryToDot(int x, int y, byte binArray[W_SOURCE * H_SOURCE], byte binArrayNext[W_SOURCE * H_SOURCE], int i);
 void initDotRandom(void);
 void dotRandomize(int i);

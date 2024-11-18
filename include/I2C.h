@@ -41,11 +41,11 @@
 //#define LEDG_H         GPIOB->BSRR = GPIO_Pin_14 //???????
 //#define LEDG_L        GPIOB->BRR  = GPIO_Pin_14 
 
-#define SDB_H         GPIOB->BSRR = GPIO_Pin_15 
-#define SDB_L         GPIOB->BRR = GPIO_Pin_15
+// #define SDB_H         GPIOB->BSRR = GPIO_Pin_15 
+// #define SDB_L         GPIOB->BRR = GPIO_Pin_15
 
-#define MISO_H         GPIOA->BSRR = GPIO_Pin_6 
-#define MISO_L         GPIOA->BRR = GPIO_Pin_6 
+// #define MISO_H         GPIOA->BSRR = GPIO_Pin_6 
+// #define MISO_L         GPIOA->BRR = GPIO_Pin_6 
 //   I2C  ������ַ
 #define Addr_GND_GND  0xA0
 #define Addr_GND_SCL  0xA2

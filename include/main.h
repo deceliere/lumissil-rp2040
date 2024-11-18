@@ -33,13 +33,13 @@ typedef struct matrixDot
     uint8_t row; // 8 bits
     uint8_t col; // 8 bits
     uint8_t pwm; // 8 bits
-    uint8_t pwmTmp; // 8 bits
-    uint8_t pwmNext; // 8 bits
-    uint8_t pwmNextTmp; // 8 bits
-    uint8_t pwmFade; // 8 bits
-    uint16_t currentRandomTimer; // 16bits
-    uint16_t nextRandomTimer; // 16bits
-    elapsedMillis pixelTimer; // 32bits
+    // uint8_t pwmTmp; // 8 bits
+    // uint8_t pwmNext; // 8 bits
+    // uint8_t pwmNextTmp; // 8 bits
+    // uint8_t pwmFade; // 8 bits
+    // uint16_t currentRandomTimer; // 16bits
+    // uint16_t nextRandomTimer; // 16bits
+    // elapsedMillis pixelTimer; // 32bits
     // int8_t postRow;
     // int8_t postPwm;
 
@@ -58,9 +58,11 @@ typedef struct dropTimer
     matrixDot dot;
 } dropTimer;
 
+
 void I2C_allLedOn(void);
 void IS31FL3737B_Test_mode1(void);
 void IS31FL3737B_init(void);
+void IS_IIC_WriteByte(uint8_t Dev_Add, uint8_t Reg_Add, uint8_t Reg_Dat);
 uint8_t IS_I2C_BufferWrite(uint8_t *pBuffer, int length, int WriteAddress, int DeviceAddress);
 void resetALlLedPWM(void);
 void allLedPWMfull(void);
@@ -73,7 +75,7 @@ void writeToBuffer(uint8_t *buffer, matrixDot dot);
 void writeFadeToBuffer(uint8_t *buffer, matrixDot dot);
 void drop(void);
 void bufferTest(void);
-void printBuffer(uint8_t *buffer);
+void printBuffer(uint8_t *buffer, int length);
 void initDrop(dropTimer *drop);
 void printDot(matrixDot dot);
 uint16_t randomDrop(void);
@@ -88,5 +90,7 @@ void xfadeDotInit(matrixDot *dot);
 void studipTest(void);
 void noiseTest(void);
 void check_stack_usage(void);
+void printDataBin(byte *pBuffer, int length);
+
 
 #endif
